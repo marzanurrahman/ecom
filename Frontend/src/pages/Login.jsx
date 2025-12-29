@@ -20,18 +20,29 @@ const Login = () => {
     try {
       const res = await axios.post(
         "http://localhost:5000/api/auth/login",
-        { email, password }
+        {
+          email,
+          password,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
 
       dispatch(
         loginSuccess({
-          user: res.data.user,
+          user: res.data.data,
           token: res.data.token,
         })
       );
 
       navigate("/");
     } catch (err) {
+      console.log(err);
+
       alert("Invalid email or password");
       console.error(err);
     } finally {
@@ -43,9 +54,7 @@ const Login = () => {
     <main className="min-h-[70vh] flex items-center justify-center">
       <Container>
         <div className="max-w-md mx-auto bg-white border border-gray-200 rounded-lg shadow-sm p-8">
-          <h1 className="text-2xl font-semibold text-center mb-6">
-            Login
-          </h1>
+          <h1 className="text-2xl font-semibold text-center mb-6">Login</h1>
 
           <form onSubmit={handleLogin} className="space-y-4">
             <input

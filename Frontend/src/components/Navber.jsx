@@ -2,23 +2,21 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FiMenu, FiX, FiUser, FiShoppingCart } from "react-icons/fi";
 import { useSelector } from "react-redux";
+import Cookies from "js-cookie";
 
 function Navbar({ onCartClick }) {
+  const token = Cookies.get("token");
+
   const [open, setOpen] = useState(false);
   const collapseRef = useRef(null);
   const navigate = useNavigate();
 
   // auth state
-  const isAuthenticated = useSelector(
-    (state) => state.auth.isAuthenticated
-  );
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
   // cart count
   const cartCount = useSelector((state) =>
-    state.cart.items.reduce(
-      (total, item) => total + item.qty,
-      0
-    )
+    state.cart.items.reduce((total, item) => total + item.qty, 0)
   );
 
   // lock body scroll when mobile menu open
@@ -49,7 +47,7 @@ function Navbar({ onCartClick }) {
   }, [open]);
 
   const handleUserClick = () => {
-    if (isAuthenticated) {
+    if (token) {
       navigate("/profile");
     } else {
       navigate("/login");
@@ -60,12 +58,8 @@ function Navbar({ onCartClick }) {
     <header className="border-b border-gray-300 bg-white h-[70px] relative z-50 flex items-center">
       <div className="px-4 py-3 w-full">
         <div className="flex items-center justify-between sm:px-10 max-w-7xl mx-auto">
-
           {/* Logo */}
-          <Link
-            to="/"
-            className="text-[20px] font-semibold text-green-600"
-          >
+          <Link to="/" className="text-[20px] font-semibold text-green-600">
             ecom
           </Link>
 

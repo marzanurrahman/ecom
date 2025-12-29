@@ -1,14 +1,41 @@
 import { Link, useOutletContext } from "react-router";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../store/cartSlice";
+import Cookies from "js-cookie";
+import axios from "axios";
 
 function ProductCard({ product }) {
+  const token = Cookies.get("token");
   const dispatch = useDispatch();
   const { openCart } = useOutletContext(); // ✅ added
 
-  const handleAddToCart = (e) => {
-    e.preventDefault();      // stop Link navigation
-    e.stopPropagation();     // extra safety
+  const addTocart = async (id) => {
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    try {
+      let res = await axios.post(
+        `http://localhost:5000/api/cart/add/${id}`,
+        {},
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleAddToCart = async (e) => {
+    e.preventDefault(); // stop Link navigation
+    e.stopPropagation(); // extra safety
 
     dispatch(
       addToCart({
@@ -20,12 +47,13 @@ function ProductCard({ product }) {
       })
     );
 
+    await addTocart(product._id);
+
     openCart(); // ✅ open cart drawer
   };
 
   return (
     <div className="bg-white shadow-sm border border-gray-200 p-3 sm:p-4 flex flex-col rounded-md transition-all">
-
       {/* Image */}
       <div className="mt-6">
         <div className="w-full sm:h-60 h-160px overflow-hidden rounded-md bg-gray-100">
@@ -38,9 +66,11 @@ function ProductCard({ product }) {
       </div>
 
       {/* Content */}
-      <Link to={`/product/${product._id}`} className="flex flex-col h-full mt-6">
+      <Link
+        to={`/product/${product._id}`}
+        className="flex flex-col h-full mt-6"
+      >
         <div className="flex-1">
-
           {/* Category */}
           {product.category && (
             <p className="text-xs text-gray-500 mb-1">

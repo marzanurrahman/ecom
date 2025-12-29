@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import Container from "../components/Container";
 import { useNavigate } from "react-router-dom";
+import { clearCart } from "../store/cartSlice";
 
 const Checkout = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const { items: cartItems } = useSelector((state) => state.cart);
-  const { token, user } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
 
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
@@ -28,12 +29,6 @@ const Checkout = () => {
       return;
     }
 
-    if (!token) {
-      alert("Please login first");
-      navigate("/login");
-      return;
-    }
-
     try {
       setLoading(true);
 
@@ -41,19 +36,24 @@ const Checkout = () => {
         "http://localhost:5000/api/order/create",
         { address },
         {
+          withCredentials: true,
           headers: {
-            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         }
       );
 
-      alert("Order placed successfully");
-      navigate("/profile"); // or orders page
+      console.log(res);
+
+      if (res.data.GatewayPageURL) {
+        dispatch(clearCart());
+        window.location.href = res.data.GatewayPageURL;
+      } else {
+        alert("Not Found");
+      }
     } catch (error) {
       console.error(error);
-      alert(
-        error?.response?.data?.message || "Order placement failed"
-      );
+      alert(error?.response?.data?.message || "Order placement failed");
     } finally {
       setLoading(false);
     }
@@ -65,12 +65,9 @@ const Checkout = () => {
         <h1 className="text-2xl font-semibold mb-8">Checkout</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
           {/* LEFT – BILLING */}
           <div className="lg:col-span-2 bg-white rounded-lg p-6 shadow-sm">
-            <h2 className="text-lg font-semibold mb-6">
-              Billing Details
-            </h2>
+            <h2 className="text-lg font-semibold mb-6">Billing Details</h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <input
@@ -109,16 +106,11 @@ const Checkout = () => {
 
           {/* RIGHT – SUMMARY */}
           <div className="bg-white rounded-lg p-6 shadow-sm">
-            <h2 className="text-lg font-semibold mb-6">
-              Order Summary
-            </h2>
+            <h2 className="text-lg font-semibold mb-6">Order Summary</h2>
 
             <div className="space-y-3 text-sm">
               {cartItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex justify-between"
-                >
+                <div key={item.id} className="flex justify-between">
                   <span>
                     {item.name} × {item.qty}
                   </span>
@@ -146,7 +138,6 @@ const Checkout = () => {
               {loading ? "Placing Order..." : "Place Order"}
             </button>
           </div>
-
         </div>
       </Container>
     </main>

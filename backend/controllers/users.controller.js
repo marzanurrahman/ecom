@@ -148,6 +148,8 @@ const loginUser = async (req, res) => {
             expiresIn: "50m",
           });
 
+          console.log(token);
+
           res.cookie("token", token, {
             maxAge: 60000 * 50, // 50 min
           });

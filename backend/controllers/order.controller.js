@@ -31,6 +31,8 @@ const createNewOrder = async (req, res) => {
       .send({ success: false, message: "Unathorised User" });
   }
 
+  console.log(req.user);
+
   let { address } = req.body;
 
   let cartData = await cartModel
@@ -69,7 +71,7 @@ const createNewOrder = async (req, res) => {
     { new: true }
   );
   const data = {
-    total_amount: grandTotal,
+    total_amount: 5000,
     currency: "BDT",
     tran_id: token, // use unique tran_id for each api call
     success_url: `http://localhost:5000/api/order/success?id=${newOrder._id}`,
@@ -105,9 +107,9 @@ const createNewOrder = async (req, res) => {
     // Redirect the user to payment gateway
     let GatewayPageURL = apiResponse.GatewayPageURL;
     // res.redirect(GatewayPageURL);
-    console.log("Redirecting to: ", GatewayPageURL);
-    // res.send({ GatewayPageURL });
-    res.send({ success: true, orderId: newOrder._id });
+    // console.log("Redirecting to: ", GatewayPageURL);
+    res.send({ GatewayPageURL });
+    // res.send({ success: true, orderId: newOrder._id });
 
     // url = GatewayPageURL;
   });
