@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import heroImage from "../assets/banner.jpg";
 import ProductList from "../components/screen/home/ProductList";
 
@@ -7,7 +8,7 @@ function Home() {
       <section
         className="
           h-[60vh] lg:h-[70vh]
-          bg-cover bg-center
+          bg-cover bg-top
           flex items-center
           justify-center lg:justify-center
           px-4
@@ -32,7 +33,7 @@ function Home() {
           </p>
 
           <button className="bg-green-600 text-white px-6 py-3 hover:bg-green-700 transition">
-            Discover Special Offers
+            <Link to={"/shop"}>Discover Special Offers</Link>
           </button>
         </div>
       </section>

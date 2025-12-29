@@ -28,6 +28,7 @@ const Profile = () => {
     if (user) {
       setName(user.name || "");
       setEmail(user.email || "");
+      setPhone(user.phone || "");
     }
   }, [user]);
 
@@ -190,8 +191,9 @@ const Profile = () => {
 
                   {!isEditing ? (
                     <>
-                      <p>Name{user?.name}</p>
-                      <p>Email{user?.email}</p>
+                      <p>Name: {user?.name}</p>
+                      <p>Email: {user?.email}</p>
+                      <p>Phone: {user?.phone}</p>
 
                       <button
                         onClick={() => setIsEditing(true)}
